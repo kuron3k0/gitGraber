@@ -31,6 +31,10 @@ def initTokensMap():
     tokensList.append(Token('STRIPE_LIVE_RESTRICTED_KEY', '(rk_live_[0-9a-zA-Z]{24,34})'))
     tokensList.append(Token('TWITTER', '[\W]{1,2}([a-zA-Z0-9]{50})[\W]{1,2}$'))
     tokensList.append(Token('TWILIO_API_KEY', 'SK[0-9a-fA-F]{32}'))
+	
+## password_patterns Added By kuron3k0 ##
+    tokensList.append(Token('password_pattern1', '(?:password|passwd|accesskey|secretkey|access_key|secret_key|access_token|secret_token|accesstoken|secrettoken)[\'"]?\s*(?:\:|=|,|=>)\s*(?:[\'"]?)(\S+)(?:[\'"]?)[,;]?'))
+    tokensList.append(Token('password_in_url', '://\w+:(.*?)@'))
 
 ## Tokens which need two keys to be interesting ##
 

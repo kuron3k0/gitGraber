@@ -31,8 +31,12 @@ def initFile(name):
         createEmptyBinaryFile(name)
 
 def clean(result):
-    cleanToken = re.sub(tokens.CLEAN_TOKEN_STEP1, '', result.group(0))
-    return re.sub(tokens.CLEAN_TOKEN_STEP2, '', cleanToken)
+    cleanToken = []
+    for i in result:
+        tmp = re.sub(tokens.CLEAN_TOKEN_STEP1, '', i)
+        tmp = re.sub(tokens.CLEAN_TOKEN_STEP2, '', tmp)
+        cleanToken.append(tmp)
+    return cleanToken
 
 def monitor():
     cmd='/usr/bin/python3 '+str(path_script)+'/gitGraber.py -q "'+args.query+'"'
@@ -60,20 +64,21 @@ def checkToken(content, tokensMap, tokensCombo):
     tokensFound = {}
     # For each type of tokens (ie 'AWS'...)
     for token in tokensMap:
-        regexPattern = re.compile(token.getRegex())
+        regexPattern = re.compile(token.getRegex(), re.I)
         # Apply the matching regex on the content of the file downloaded from GitHub
-        result = re.search(regexPattern, content)
+        result = re.findall(regexPattern, content)
         # If the regex matches, add the result of the match to the dict tokens and the token name found
         if result:
             cleanToken = clean(result) 
-            blacklist = token.getBlacklist()
-            foundbl = False
-            if blacklist:
-                for blacklistedPattern in blacklist:
-                    if blacklistedPattern in cleanToken:
-                        foundbl = True
-                if not foundbl:
-                    tokensFound[cleanToken] = token.getName()
+            #blacklist = token.getBlacklist()
+            #foundbl = False
+            #if blacklist:
+            #    for blacklistedPattern in blacklist:
+            #        if blacklistedPattern in cleanToken:
+            #            foundbl = True
+            #    if not foundbl:
+            for i in cleanToken:
+                tokensFound[i] = token.getName()
     
     for combo in tokensCombo:
         found = True
@@ -286,6 +291,7 @@ def doSearchGithub(args,tokenMap, tokenCombos,keyword):
     print(url)
     response = doRequestGitHub(url, True, True)
     content = parseResults(response.text)
+    #print(content)
     if content:
         for rawGitUrl in content.keys():
             tokensResult = checkToken(content[rawGitUrl][0].text, tokenMap, tokenCombos)
